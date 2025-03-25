@@ -53,6 +53,24 @@ internal class SimpleDownloader : IDownloader
                     await File.WriteAllBytesAsync(dResult.ActualFilePath, decrypted);
                     break;
                 }
+                case EncryptMethod.IQYI:
+                    {
+                        var key = segment.EncryptInfo.Key;
+
+                        var fileBytes = File.ReadAllBytes(dResult.ActualFilePath);
+                        var decrypted = new DecrypterIQY(key, fileBytes).GetDecryptedData();
+                        await File.WriteAllBytesAsync(dResult.ActualFilePath, decrypted);
+                        break;
+                    }
+                case EncryptMethod.YOUKU:
+                    {
+                        var key = segment.EncryptInfo.Key;
+                        var nonce = segment.EncryptInfo.IV;
+                        var fileBytes = File.ReadAllBytes(dResult.ActualFilePath);
+                        var decrypted = DecrypterYK.Decrypt(fileBytes, key, nonce);
+                        await File.WriteAllBytesAsync(dResult.ActualFilePath, decrypted);
+                        break;
+                    }
                 case EncryptMethod.SAMPLE_AES_CTR:
                     // throw new NotSupportedException("SAMPLE-AES-CTR");
                     break;
